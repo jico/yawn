@@ -27,7 +27,7 @@ WHITE="\033[1;37m"
 YELLOW="\033[1;33m"
 
 # Spectrum
-COLORS=( $DGRAY $LGRAY $WHITE $CYAN $LCYAN $LGREEN )
+COLORS=( $LGRAY $LGRAY $CYAN $LCYAN $LGREEN $LGREEN )
 
 # Convert a UNIX timestamp to a date
 function tsToDate {
