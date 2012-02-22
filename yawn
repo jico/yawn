@@ -1,0 +1,74 @@
+#!/bin/bash
+#
+# yawn - sleepyti.me for the command line
+#
+
+# Sleep cycle in seconds
+CYCLE=5400
+
+# Average time to fall asleep in seconds
+FALL=840
+
+# Current UNIX timestamp
+NOW=`date "+%s"`
+
+platform=`uname`
+
+# Pretty colors
+BLUE="\033[0;34m"
+LBLUE="\033[1;34m"
+CYAN="\033[0;36m"
+LCYAN="\033[1;36m"
+LGREEN="\033[1;32m"
+GREEN="\033[0;32m"
+DGRAY="\033[1;30m"
+LGRAY="\033[0;37m"
+WHITE="\033[1;37m"
+YELLOW="\033[1;33m"
+
+# Spectrum
+COLORS=( $DGRAY $LGRAY $WHITE $CYAN $LCYAN $LGREEN )
+
+# Convert a UNIX timestamp to a date
+function tsToDate {
+  if [ $platform = "Darwin" ]; then
+    echo `date -r $1 "+%I:%M%p"`
+  else
+    echo `date -d @$1 "+%I:%M%p"`
+  fi
+}
+
+# When are good times to wake up if one
+# were to go to bed now
+function optimalWake {
+  echo -e "Wake up at:"
+  declare -a TIMES
+  let MARK=$(($NOW + $FALL))
+  for (( i=0;i<6;i++)); do
+    MARK=$(($MARK + $CYCLE))
+    TIMES[$i]=$(($MARK))
+  done
+  
+  for (( i=0;i<6;i++)); do
+    #tsToDate ${TIMES[${i}]}
+    echo -ne ${COLORS[${i}]}
+    echo -n "~  "
+    tsToDate ${TIMES[${i}]}
+    echo -ne "\033[0m"
+  done
+}
+
+# When are good times to go to bed in 
+# order to wake up at time hh:mm
+function wakeAt {
+  echo "called wakeAt"
+}
+
+DEFAULT="-n"
+
+case "${1:-$DEFAULT}" in
+  -n)
+    optimalWake
+    ;;
+esac
+  
