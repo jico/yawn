@@ -9,6 +9,8 @@ fall=$((14*60))
 # Sleep CYCLE in seconds
 CYCLE=5400
 
+PLATFORM=`uname`
+
 # Current UNIX timestamp
 now=`date "+%s"`
 
@@ -18,19 +20,12 @@ hour=`date "+%H"`
 # Current minute
 minute=`date "+%M"`
 
-PLATFORM=`uname`
-
 # Some pretty colors
-BLUE="\033[0;34m"
-LBLUE="\033[1;34m"
 CYAN="\033[0;36m"
 LCYAN="\033[1;36m"
 LGREEN="\033[1;32m"
-GREEN="\033[0;32m"
-DGRAY="\033[1;30m"
 LGRAY="\033[0;37m"
 WHITE="\033[1;37m"
-YELLOW="\033[1;33m"
 
 # Spectrum of colors (from first cycle to last)
 colors=( $LGRAY $LGRAY $CYAN $LCYAN $LGREEN $LGREEN )
@@ -52,7 +47,6 @@ function optimalWake {
     MARK=$(($MARK + $CYCLE))
     TIMES[$i]=$(($MARK))
   done
-  
   for (( i=0;i<6;i++)); do
     #tsToDate ${TIMES[${i}]}
     echo -ne ${colors[${i}]}
@@ -71,6 +65,7 @@ function wake {
     target=`date -d $when "+%s"`
   fi
   
+  # Bump to next day if so
   if [[ "$target" < "$now" ]]; then
     target=$((target + 24*60*60))
   fi
@@ -102,10 +97,30 @@ function wake {
 DEFAULT="-n"
 
 case "${1:-$DEFAULT}" in
-  -n)
+  -n|--now)
     optimalWake
     ;;
-  -w)
+  -w|--wake)
     wake $2
+    ;;
+  -h|--help)
+    echo "yawn --- bedtime calculator
+  * Calculations based on 90 minutes sleep cycles.
+  * Average time to fall asleep is 14 minutes. All
+    estimates include this time.
+    (No need to add/subract this time)
+    
+Example usage:
+yawn [-n|--now]
+  Determine best times to wake up if you were to 
+  go to bed now (and fall asleep in average time).
+  
+yawn [-w|--wake] HH:MM(am|pm)
+  Determine when to go to bed.
+  Includes average time to fall asleep (14 minutes).
+  i.e. yawn -w 8:00am"
+    ;;
+  *)
+    echo "illegal option $1: --help for usage info"
     ;;
 esac
