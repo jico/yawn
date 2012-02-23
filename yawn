@@ -63,7 +63,7 @@ function optimalWake {
 }
 
 # When are good times to go to bed in order to wake up at time hh:mm
-function wake {
+function optimalSleep {
   when=$1
   if [ $PLATFORM = "Darwin" ]; then
     target=`date -j -f "%l:%M%p" $when "+%s"`
@@ -107,7 +107,7 @@ case "${1:-$DEFAULT}" in
     optimalWake
     ;;
   -w|--wake)
-    wake $2
+    optimalSleep $2
     ;;
   -h|--help)
     echo "yawn --- bedtime calculator
