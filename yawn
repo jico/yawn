@@ -3,14 +3,20 @@
 # yawn - sleepyti.me for the command line
 #
 
+# Average time to fall asleep in seconds
+fall=$((14*60))
+
 # Sleep CYCLE in seconds
 CYCLE=5400
 
-# Average time to fall asleep in seconds
-fall=840
-
 # Current UNIX timestamp
 now=`date "+%s"`
+
+# Current hour
+hour=`date "+%H"`
+
+# Current minute
+minute=`date "+%M"`
 
 PLATFORM=`uname`
 
@@ -41,7 +47,6 @@ function tsToDate {
 # When are good times to wake up if one were to go to bed now
 function optimalWake {
   echo -e "Wake up at:"
-  declare -a TIMES
   let MARK=$(($now + $fall))
   for (( i=0;i<6;i++)); do
     MARK=$(($MARK + $CYCLE))
@@ -58,8 +63,37 @@ function optimalWake {
 }
 
 # When are good times to go to bed in order to wake up at time hh:mm
-function wakeAt {
-  echo "called wakeAt"
+function wake {
+  when=$1
+  if [ $PLATFORM = "Darwin" ]; then
+    target=`date -j -f "%l:%M%p" $when "+%s"`
+  else
+    target=`date -d $when "+%s"`
+  fi
+  
+  if [[ "$target" < "$now" ]]; then
+    target=$((target + 24*60*60))
+  fi
+  
+  numCycles=$(( (target - now) / CYCLE ))
+  limit=6
+  if [[ "$numCycles" < "$limit" ]]; then
+    limit=$numCycles
+  fi
+
+  echo -e "Go to bed at:"
+  let MARK=$(($target - $fall))  
+  for (( i=0;i<6;i++)); do
+    MARK=$(($MARK - $CYCLE))
+    TIMES[$i]=$(($MARK))
+  done
+  
+  for (( i=0;i<limit;i++)); do
+    echo -ne ${colors[${i}]}
+    echo -n "~  "
+    tsToDate ${TIMES[${i}]}
+    echo -ne "\033[0m"
+  done
 }
 
 # Run modes
@@ -70,5 +104,8 @@ DEFAULT="-n"
 case "${1:-$DEFAULT}" in
   -n)
     optimalWake
+    ;;
+  -w)
+    wake $2
     ;;
 esac
