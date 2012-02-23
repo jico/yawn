@@ -1,6 +1,12 @@
 #!/bin/bash
 #
 # yawn - sleepyti.me for the command line
+# 
+# Determine the best times to fall asleep or wake up.
+#
+# By Jico Baligod
+# www.baligod.com
+# Copyright under the MIT License.
 #
 
 # Average time to fall asleep in seconds
