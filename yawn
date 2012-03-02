@@ -20,12 +20,6 @@ PLATFORM=`uname`
 # Current UNIX timestamp
 now=`date "+%s"`
 
-# Current hour
-hour=`date "+%H"`
-
-# Current minute
-minute=`date "+%M"`
-
 # Some pretty colors
 CYAN="\033[0;36m"
 LCYAN="\033[1;36m"
