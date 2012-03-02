@@ -6,8 +6,6 @@
 #
 # By Jico Baligod
 # www.baligod.com
-# Copyright under the MIT License.
-#
 
 # Average time to fall asleep in seconds
 fall=$((14*60))
@@ -34,9 +32,7 @@ function tsToDate {
 function optimalWake {
   echo -e "Wake up at:"
   for (( i=0,j=$((NOW + fall + CYCLE));i<6;i++,j=$((j+CYCLE)))); do
-    #TIMES[$i]=$((j))
-    echo -ne "${colors[${i}]}"
-    echo -n "~  "
+    echo -ne "${colors[${i}]}~ "
     tsToDate $j
     echo -ne "\033[0m"
   done
@@ -70,10 +66,7 @@ function optimalSleep {
 }
 
 # Run modes
-#
-# -n: Go to bed now, fall asleep in 14 minutes, when should I wake up?
 DEFAULT="-n"
-
 case "${1:-$DEFAULT}" in
   -n|--now)
     optimalWake
