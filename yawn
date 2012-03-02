@@ -33,27 +33,21 @@ function tsToDate {
 # When are good times to wake up if one were to go to bed now
 function optimalWake {
   echo -e "Wake up at:"
-  let MARK=$(($NOW + $fall))
-  for (( i=0;i<6;i++)); do
-    MARK=$(($MARK + $CYCLE))
-    TIMES[$i]=$(($MARK))
-  done
-  for (( i=0;i<6;i++)); do
-    #tsToDate ${TIMES[${i}]}
-    echo -ne ${colors[${i}]}
+  for (( i=0,j=$((NOW + fall + CYCLE));i<6;i++,j=$((j+CYCLE)))); do
+    #TIMES[$i]=$((j))
+    echo -ne "${colors[${i}]}"
     echo -n "~  "
-    tsToDate ${TIMES[${i}]}
+    tsToDate $j
     echo -ne "\033[0m"
   done
 }
 
 # When are good times to go to bed in order to wake up at time hh:mm
 function optimalSleep {
-  when=$1
   if [ $PLATFORM = "Darwin" ]; then
-    target=`date -j -f "%l:%M%p" $when "+%s"`
+    target=`date -j -f "%l:%M%p" $1 "+%s"`
   else
-    target=`date -d $when "+%s"`
+    target=`date -d $1 "+%s"`
   fi
   
   # Bump to next day if so
@@ -68,16 +62,9 @@ function optimalSleep {
   fi
 
   echo -e "Go to bed at:"
-  let MARK=$(($target - $fall))  
-  for (( i=0;i<6;i++)); do
-    MARK=$(($MARK - $CYCLE))
-    TIMES[$i]=$(($MARK))
-  done
-  
-  for (( i=0;i<limit;i++)); do
-    echo -ne ${colors[${i}]}
-    echo -n "~  "
-    tsToDate ${TIMES[${i}]}
+  for (( i=0,j=$(($target-$fall-$CYCLE));i<6;i++,j=$(($j-$CYCLE)))); do
+    echo -ne "${colors[${i}]}~ "
+    tsToDate $j
     echo -ne "\033[0m"
   done
 }
